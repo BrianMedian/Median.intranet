@@ -25,6 +25,18 @@ namespace Median.Intranet.Controllers
             return BadRequest(Envelope.Error(errors));
         }
 
+        protected IActionResult FromResult(Result result)
+        {
+            if (result.Failure)
+            {
+                return Error(result.Error.Message);
+            }
+            else
+            {
+                return base.Ok(Envelope.Ok());
+            }
+        }
+
         protected ActionResult Error(string errorMessage)
         {
             return BadRequest(Envelope.Error(errorMessage));

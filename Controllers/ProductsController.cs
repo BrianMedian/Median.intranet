@@ -1,0 +1,63 @@
+﻿using Median.Intranet.DAL.Contracts;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Median.Intranet.Controllers
+{
+    [Route("api/products")]
+    [ApiController]
+    public class ProductsController : BaseController
+    {
+        private readonly IProductEntityRepository productRepository;
+        public ProductsController(IProductEntityRepository productRepository)
+        {
+            this.productRepository = productRepository;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductById(Guid id)
+        {
+            var productResult = await productRepository.GetByIdAsync(id);            
+            return FromResult(productResult);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var productsResult = await productRepository.GetAllAsync();            
+            return FromResult(productsResult);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
+        {
+            var productEntity = new Median.Intranet.Models.ProductEntity
+            {
+                Name = request.name,
+                Description = request.description,
+                Price = request.price
+            };
+            var createResult = await productRepository.CreateAsync(productEntity);            
+            return FromResult(createResult);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request)
+        {
+            var existingProductResult = await productRepository.GetByIdAsync(id);
+            if (!existingProductResult.Success)
+            {
+                return FromResult(existingProductResult);
+            }
+            var existingProduct = existingProductResult.Value;
+            existingProduct.Name = request.name;
+            existingProduct.Description = request.description;
+            existingProduct.Price = request.price;
+            var updateResult = await productRepository.UpdateAsync(existingProduct);
+            return FromResult(updateResult);
+        }
+    }
+
+    public record CreateProductRequest(string name, string description, int price);
+    public record UpdateProductRequest(string name, string description, int price);
+}
