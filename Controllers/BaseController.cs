@@ -1,8 +1,9 @@
-﻿using Median.IntranetTemplate.Common;
+﻿using Median.Core.Models.Common;
+using Median.Intranet.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Median.IntranetTemplate.Controllers
+namespace Median.Intranet.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

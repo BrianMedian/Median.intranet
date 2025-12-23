@@ -4,7 +4,10 @@ using Median.Authentication.Simple;
 using Median.Authentication.Simple.Common;
 using Median.Authentication.Simple.Facade;
 using Median.Authentication.Simple.Models;
-using Median.IntranetTemplate.Common;
+using Median.Intranet.Common;
+using Median.Intranet.DAL.Contracts;
+using Median.Intranet.DAL.Repositories;
+using Median.Intranet.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -52,6 +55,14 @@ var dataSource = dataSourceBuilder.Build();
 
 // -----------------------------------------------------------
 // SERVICES
+// -----------------------------------------------------------
+
+builder.Services.AddScoped<IDocumentEntityRepository, DocumentEntityRepository>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IProductEntityRepository, ProductEntityRepository>();
+
+// -----------------------------------------------------------
+// UTILS
 // -----------------------------------------------------------
 
 builder.Services.AddRequestValidation();
@@ -144,23 +155,23 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 
 //debug
-app.Use(async (context, next) =>
-{
-    Log.Information("Request: {Method} {Path}", context.Request.Method, context.Request.Path);
-    Log.Information("Authorization header: {Auth}", context.Request.Headers["Authorization"].ToString());
+//app.Use(async (context, next) =>
+//{
+//    Log.Information("Request: {Method} {Path}", context.Request.Method, context.Request.Path);
+//    Log.Information("Authorization header: {Auth}", context.Request.Headers["Authorization"].ToString());
 
-    await next();
+//    await next();
 
-    Log.Information("Response status: {Status}", context.Response.StatusCode);
-    if (context.User?.Identity?.IsAuthenticated == true)
-    {
-        Log.Information("User authenticated: {Email}", context.User.FindFirstValue(ClaimTypes.Email));
-    }
-    else
-    {
-        Log.Warning("User NOT authenticated");
-    }
-});
+//    Log.Information("Response status: {Status}", context.Response.StatusCode);
+//    if (context.User?.Identity?.IsAuthenticated == true)
+//    {
+//        Log.Information("User authenticated: {Email}", context.User.FindFirstValue(ClaimTypes.Email));
+//    }
+//    else
+//    {
+//        Log.Warning("User NOT authenticated");
+//    }
+//});
 //enddebug
 
 
