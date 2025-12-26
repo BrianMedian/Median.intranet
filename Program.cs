@@ -60,6 +60,10 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddScoped<IDocumentEntityRepository, DocumentEntityRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IProductEntityRepository, ProductEntityRepository>();
+builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+builder.Services.AddScoped<IProfileDataRepository, ProfileDataRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailTypeRepository, EmailTypeRepository>();
 
 // -----------------------------------------------------------
 // UTILS
@@ -118,6 +122,9 @@ builder.Services.AddCors(options =>
 // -----------------------------------------------------------
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
+
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("Smtp"));
 
 builder.Services.AddControllers();
 
@@ -188,13 +195,20 @@ app.MapMethods("{*path}", new[] { "OPTIONS" }, () => Results.Ok())
 // -----------------------------------------------------------
 
 // Basic health check
-app.MapGet("/", () => "Median RAG Server")
+app.MapGet("/", () => "Median Intranet Server")
    .RequireCors("Frontend");
 
 app.MapPost("/login", [AllowAnonymous] async (IAuthFacade auth, LoginRequest req) =>
 {
     var result = await auth.LoginAsync(req.Email, req.Password);
     return result is null ? Results.Unauthorized() : Results.Ok(result);
+})
+.RequireCors("Frontend");
+
+app.MapPost("/changepassword", [Authorize(Roles = "Admin")] async (IAuthFacade auth, Median.Authentication.Simple.Models.ChangePasswordRequest req) =>
+{
+    var result = await auth.ChangePasswordAsync(req.Email, req.CurrentPassword, req.NewPassword);
+    return result ? Results.Unauthorized() : Results.Ok(result);
 })
 .RequireCors("Frontend");
 

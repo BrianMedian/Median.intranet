@@ -9,7 +9,7 @@ namespace Median.Intranet.DAL.Repositories
 {
     public class DocumentEntityRepository : BaseRepository, IDocumentEntityRepository
     {
-        protected DocumentEntityRepository(IOptions<DatabaseSettings> dbSettings) : base(dbSettings)
+        public DocumentEntityRepository(IOptions<DatabaseSettings> dbSettings) : base(dbSettings)
         {
         }
 
@@ -17,7 +17,7 @@ namespace Median.Intranet.DAL.Repositories
         {
             try
             {
-                const string sql = "insert into documents(name, contenttype, description, version, filepath, filename, filesize) values (@name, @contenttype, @description, @version, @filename, @filesize) RETURNING *";
+                const string sql = "insert into documents(name, contenttype, description, version, filepath, filename, filesize) values (@name, @contenttype, @description, @version, @filepath, @filename, @filesize) RETURNING *";
                 using var conn = CreateConnection();
                 var newDocument = await conn.QuerySingleOrDefaultAsync<DocumentEntity>(sql, document);
                 return Result<DocumentEntity>.Ok(newDocument!);
@@ -47,7 +47,7 @@ namespace Median.Intranet.DAL.Repositories
         {
             try
             {
-                const string sql = "select * from documents orderby name";
+                const string sql = "select * from documents order by name";
                 using var conn = CreateConnection();
                 var result = await conn.QueryAsync<DocumentEntity>(sql);
                 return Result.Ok(result.ToList());

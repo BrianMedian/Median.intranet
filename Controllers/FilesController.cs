@@ -24,16 +24,11 @@ namespace Median.Intranet.Controllers
 
         [HttpPost("upload")]
         [RequestSizeLimit(200_000_000)]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromForm] UploadDocumentRequest uploadDocumentRequest)
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
                 return BadRequest("No file uploaded.");
-            }
-
-            if (uploadDocumentRequest == null)
-            {
-                return BadRequest("No document data present");
             }
 
             //only pdf and word files allowed
@@ -49,7 +44,7 @@ namespace Median.Intranet.Controllers
                 return BadRequest($"File type not allowed: {file.ContentType}");
             }
 
-            var saved = await _storage.SaveFileAsync(file, Guid.NewGuid(), uploadDocumentRequest.name, uploadDocumentRequest.description);                        
+            var saved = await _storage.SaveFileAsync(file, Guid.NewGuid());                        
 
             return Ok(saved);
         }
@@ -81,6 +76,38 @@ namespace Median.Intranet.Controllers
         {
             var result = await this._repo.GetAllAsync();
             return Ok(result);
+        }
+
+        [HttpGet("download/{id}")]
+        public async Task<IActionResult> DownloadFile(string id)
+        {
+            if (!Guid.TryParse(id, out Guid fileId))
+            {
+                return BadRequest("Invalid file ID");
+            }
+
+            // Hent fil metadata
+            var docResult = await _repo.GetByIdAsync(fileId);
+            if (!docResult.Success)
+            {
+                return NotFound(docResult.Error.Message);
+            }
+
+            var doc = docResult.Value;
+
+            // Hent file stream
+            var fileResult = await _storage.GetFileAsync(fileId);
+            if (!fileResult.Success)
+            {
+                return NotFound(fileResult.Error.Message);
+            }
+
+            // Returner filen
+            return File(
+                fileResult.Value,
+                doc.ContentType ?? "application/octet-stream",
+                doc.FileName
+            );
         }
 
         [HttpGet("{fileid}")]

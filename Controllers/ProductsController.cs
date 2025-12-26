@@ -1,4 +1,5 @@
 ﻿using Median.Intranet.DAL.Contracts;
+using Median.Intranet.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace Median.Intranet.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             var productsResult = await productRepository.GetAllAsync();            
-            return FromResult(productsResult);
+            return FromResult<List<ProductEntity>>(productsResult);
         }
 
         [HttpPost]

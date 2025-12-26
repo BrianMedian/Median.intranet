@@ -18,7 +18,46 @@ namespace Median.Intranet.Services
             Directory.CreateDirectory(_rootPath);
         }
 
-        public async Task<Result<DocumentEntity>> SaveFileAsync(IFormFile file, Guid documentId, string name, string description, int version = 1)
+        public async Task<Result<FileStream>> GetFileAsync(Guid documentId)
+        {
+            try
+            {
+                // Hent dokument metadata fra database
+                var docResult = await _repo.GetByIdAsync(documentId);
+                if (!docResult.Success)
+                {
+                    return Result.Fail<FileStream>(docResult.Error);
+                }
+
+                var doc = docResult.Value;
+
+                // Check om filen eksisterer
+                if (!File.Exists(doc.FilePath))
+                {
+                    return Result.Fail<FileStream>(
+                        new Error("FileNotFound", $"File not found at path: {doc.FilePath}")
+                    );
+                }
+
+                // Åbn og returner file stream
+                var fileStream = new FileStream(
+                    doc.FilePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    bufferSize: 4096,
+                    useAsync: true
+                );
+
+                return Result.Ok(fileStream);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail<FileStream>(Errors.General.FromException(ex));
+            }
+        }
+
+        public async Task<Result<DocumentEntity>> SaveFileAsync(IFormFile file, Guid documentId)
         {
             try
             {
@@ -34,13 +73,13 @@ namespace Median.Intranet.Services
                 var doc = new DocumentEntity
                 {
                     Id = documentId,
-                    FileName = file.Name,
+                    FileName = file.FileName,
                     ContentType = file.ContentType,
                     FilePath = filePath,
                     FileSize = file.Length,
-                    Name = name,
-                    Version = version,
-                    Description = description,
+                    Name = file.FileName,
+                    Version = 0,
+                    Description = "",
                     CreatedAt = DateTime.UtcNow,
                 };
 

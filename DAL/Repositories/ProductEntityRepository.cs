@@ -10,7 +10,7 @@ namespace Median.Intranet.DAL.Repositories
 {
     public class ProductEntityRepository : BaseRepository, IProductEntityRepository
     {
-        protected ProductEntityRepository(IOptions<DatabaseSettings> dbSettings) : base(dbSettings)
+        public ProductEntityRepository(IOptions<DatabaseSettings> dbSettings) : base(dbSettings)
         {
         }
 
@@ -48,7 +48,7 @@ namespace Median.Intranet.DAL.Repositories
         {
             try
             {
-                const string sql = "select * from products orderby name";
+                const string sql = "select * from products order by name";
                 using var conn = CreateConnection();
                 var result = await conn.QueryAsync<ProductEntity>(sql);
                 return Result.Ok(result.ToList());

@@ -31,10 +31,17 @@ namespace Median.Intranet.Controllers
             {
                 return Error(result.Error.Message);
             }
-            else
+            return base.Ok(Envelope.Ok());
+        }
+
+        protected IActionResult FromResult<T>(Result<T> result)
+        {
+            if (result.Failure)
             {
-                return base.Ok(Envelope.Ok());
+                return Error(result.Error.Message);
             }
+
+            return base.Ok(Envelope.Ok(result.Value));
         }
 
         protected ActionResult Error(string errorMessage)
