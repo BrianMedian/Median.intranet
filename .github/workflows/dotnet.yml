@@ -25,16 +25,11 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-
-    - name: Add GitHub Packages feed auth
+        
+    - name: Authenticate to GitHub Packages
       run: |
-        dotnet nuget remove source github || true
-        dotnet nuget add source \
-            --name github \
-            --username ${{ github.actor }} \
-            --password ${{ secrets.GH_PACKAGES_TOKEN }} \
-            --store-password-in-clear-text \
-            https://nuget.pkg.github.com/brianmedian/index.json
+        echo "NUGET_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
 
 
 
