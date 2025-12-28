@@ -26,10 +26,15 @@ jobs:
       with:
         dotnet-version: 9.0.x
         
-    - name: Authenticate to GitHub Packages
+    - name: Add GitHub Packages feed auth
       run: |
-        echo "NUGET_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-
+        dotnet nuget remove source github || true
+        dotnet nuget add source \
+            --name github \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GH_PACKAGES_TOKEN }} \
+            --store-password-in-clear-text \
+            https://nuget.pkg.github.com/brianmedian/index.json
 
 
 
@@ -51,9 +56,6 @@ jobs:
     - name: Publish API
       run: dotnet publish Median.Intranet.csproj -c Release -o publish
 
-    - name: Move publish output into API folder
-      run: mv publish Median.Intranet/publish
-
 
     # ------------------------------
     # 4) Login to GHCR
@@ -71,8 +73,8 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context: ./Median.Intranet
-        file: Median.Intranet/Dockerfile
+        context: .
+        file: Dockerfile
         push: true
         tags: |
           ghcr.io/${{ env.IMAGE_NAME }}:latest
