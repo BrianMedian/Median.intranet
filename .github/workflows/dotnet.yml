@@ -73,7 +73,7 @@ jobs:
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
-        context: ./Median.Intranet
+        context: .
         file: Dockerfile
         push: true
         tags: |
