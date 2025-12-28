@@ -74,7 +74,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./Median.Intranet
-        file: Median.Intranet/Dockerfile
+        file: Dockerfile
         push: true
         tags: |
           ghcr.io/${{ env.IMAGE_NAME }}:latest
