@@ -30,6 +30,8 @@ jobs:
       run: |
         echo "NUGET_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
+    - name: Debug NuGet sources
+      run: dotnet nuget list source
 
 
 
