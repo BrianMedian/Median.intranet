@@ -1,0 +1,84 @@
+name: .NET Build and Docker Push
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: brianmedian
+  IMAGE_NAME: brianmedian/median.intranet  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Add GitHub Packages feed auth
+      run: |
+        dotnet nuget remove source github || true
+        dotnet nuget add source \
+            --name github \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GH_PACKAGES_TOKEN }} \
+            --store-password-in-clear-text \
+            https://nuget.pkg.github.com/brianmedian/index.json
+
+
+
+    # ------------------------------
+    # 1) Restore entire solution
+    # ------------------------------
+    - name: Restore
+      run: dotnet restore Median.intranet.sln
+
+    # ------------------------------
+    # 2) Build entire solution
+    # ------------------------------
+    - name: Build
+      run: dotnet build Median.IntranetSolution.sln -c Release --no-restore
+
+    # ------------------------------
+    # 3) Publish API
+    # ------------------------------
+    - name: Publish API
+      run: dotnet publish Median.Intranet.csproj -c Release -o publish
+
+    - name: Move publish output into API folder
+      run: mv publish Median.Intranet/publish
+
+
+    # ------------------------------
+    # 4) Login to GHCR
+    # ------------------------------
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # ------------------------------
+    # 5) Build + push Docker image
+    # ------------------------------
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: ./Median.Intranet
+        file: Median.Intranet/Dockerfile
+        push: true
+        tags: |
+          ghcr.io/${{ env.IMAGE_NAME }}:latest
+          ghcr.io/${{ env.IMAGE_NAME }}:${{ github.run_number }}
