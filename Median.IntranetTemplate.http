@@ -26,3 +26,12 @@ Content-Type: application/json
   "emailtypeid" : "mytype",
   "fileid" : "746357b6-d836-4221-9f69-95a471a7a2ad"
 }
+
+### send business card email
+POST {{hostaddress}}/api/sendemail/businesscard
+Content-Type: application/json
+
+{
+  "to" : "brian@median.dk",  
+  "userid" : "ddf89a16-f57d-4f02-b5bb-42232dff11b9"
+}

@@ -62,7 +62,7 @@ namespace Median.Intranet.Services
         {
             try
             {                
-                var result = await SendEmail(sendingUserId, EmailTypes.SendFileEmail, toEmail, string.Empty, null, null);
+                var result = await SendEmail(sendingUserId, EmailTypes.SendBusinessCardEmail, toEmail, string.Empty, null, null);
                 return Result.Ok(result);
             }
             catch (Exception ex)
@@ -238,9 +238,12 @@ namespace Median.Intranet.Services
 
         private string ReplacePlaceholders(string content, Dictionary<string, string> placeholders)
         {
-            foreach (var placeholder in placeholders)
+            if (placeholders != null)
             {
-                content = content.Replace($"{{{{{placeholder.Key}}}}}", placeholder.Value);
+                foreach (var placeholder in placeholders)
+                {
+                    content = content.Replace($"{{{{{placeholder.Key}}}}}", placeholder.Value);
+                }
             }
             return content;
         }
