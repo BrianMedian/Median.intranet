@@ -57,6 +57,13 @@ namespace Median.Intranet.Controllers
             var updateResult = await productRepository.UpdateAsync(existingProduct);
             return FromResult(updateResult);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(Guid id)
+        {
+            var result = await this.productRepository.DeleteAsync(id);
+            return FromResult(result);
+        }
     }
 
     public record CreateProductRequest(string name, string description, int price);

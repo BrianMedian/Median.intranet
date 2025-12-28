@@ -80,7 +80,7 @@ namespace Median.Intranet.DAL.Repositories
             {
                 const string sql = "update products set name = @name, description = @description, price = @price where id = @id";
                 using var conn = CreateConnection();
-                var newProduct = await conn.ExecuteAsync(sql, new {name = product.Name, description = product.Description, price = product.Price});
+                var newProduct = await conn.ExecuteAsync(sql, new {name = product.Name, description = product.Description, price = product.Price, @id = product.Id});
                 return Result<ProductEntity>.Ok(newProduct!);
             }
             catch (Exception ex)

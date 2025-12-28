@@ -55,3 +55,19 @@ CREATE TABLE IF NOT EXISTS emailsettings(
 	emailtype TEXT NOT NULL,
 	templateid UUID NULL
 )
+
+-- emaillog table
+CREATE TABLE IF NOT EXISTS emaillog(
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	createdat TIMESTAMP DEFAULT NOW(),
+	updatedat TIMESTAMP DEFAULT NOW(),	
+	userid UUID NULL,
+	emailtypeid TEXT NULL,
+	fromemail TEXT NULL,
+	toemail TEXT NULL,
+	templateid UUID NULL,
+	status TEXT NULL
+)
+
+-- seed data
+INSERT INTO users(id, email, passwordhash, created, userrole, lastlogin) VALUES ('ddf89a16-f57d-4f02-b5bb-42232dff11b9', 'info@median.dk', 'DBT3trJHhTmyo1E+xar0qQ==.GRVh7wFtw9JrOoVodikt6PczWuM+ci+xNr9mdEaE+gs=', now(), 'Admin', now());

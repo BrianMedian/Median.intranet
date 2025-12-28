@@ -1,7 +1,10 @@
-﻿namespace Median.Intranet.Services
+﻿using Median.Core.Models.Common;
+
+namespace Median.Intranet.Services
 {
     public interface IEmailService
     {
-        //Task<bool> SendEmail(string templateId, string toEmail, Dictionary<string, string> placeholders);
+        Task<Result<bool>> SendFileToRecipient(string toEmail, Guid fileId, Guid sendingUserId);
+        Task<Result<bool>> SendBusinessCardToRecipient(string toEmail, Guid sendingUserId);
     }
 }

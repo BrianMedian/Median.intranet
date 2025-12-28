@@ -14,3 +14,15 @@ Content-Type: application/json
 ### get profile
 GET {{hostaddress}}/me
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGY4OWExNi1mNTdkLTRmMDItYjViYi00MjIzMmRmZjExYjkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJpbmZvQG1lZGlhbi5kayIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzY2NDc3ODg0LCJpc3MiOiJtZWRpYW4uYXV0aCIsImF1ZCI6Im1lZGlhbi53ZWJhcHAifQ.EU14NiSA5UAR0ZObJ2p3KBc0chG1egyI0QGust4JTU0
+
+
+### send file email
+POST {{hostaddress}}/api/sendemail/file
+Content-Type: application/json
+
+{
+  "to" : "brian@median.dk",
+  "from" : "noreply@median.dk",
+  "emailtypeid" : "mytype",
+  "fileid" : "746357b6-d836-4221-9f69-95a471a7a2ad"
+}

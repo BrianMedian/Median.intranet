@@ -10,9 +10,11 @@ namespace Median.Intranet.DAL.Repositories
 {
     public class EmailTypeRepository : BaseRepository, IEmailTypeRepository
     {
-        public EmailTypeRepository(IOptions<DatabaseSettings> dbSettings) : base(dbSettings)
+        private readonly ILogger<EmailTypeRepository> logger;
+        public EmailTypeRepository(IOptions<DatabaseSettings> dbSettings, ILogger<EmailTypeRepository> logger) : base(dbSettings)
         {
             EnsureAll();
+            this.logger = logger;
         }
 
         public async Task<Result<List<EmailTypeDto>>> GetAllAsync()
@@ -26,26 +28,28 @@ namespace Median.Intranet.DAL.Repositories
             }
             catch (Exception ex)
             {
+                this.logger.LogCritical(ex, ex.Message);
                 return Result.Fail<List<EmailTypeDto>>(Errors.Database.GeneralError(ex.Message));
             }
         }
 
-        public async Task<Result<string>> GetByEmailType(string emailType)
+        public async Task<Result<EmailTypeDto>> GetByEmailType(string emailType)
         {
             try
             {
-                const string sql = "select templateid from emailsettings where emailtype = @type";
+                const string sql = "select * from emailsettings where emailtype = @type";
                 using var conn = CreateConnection();
-                var result = await conn.QuerySingleOrDefaultAsync<string>(sql, new { type = emailType });
-                if (!string.IsNullOrEmpty(result))
+                var result = await conn.QuerySingleOrDefaultAsync<EmailTypeDto>(sql, new { type = emailType });
+                if(result != null)
                 {
-                    return Result<string>.Ok(result);
-                }
-                return Result.Fail<string>(Errors.Database.QueryError("Email type not found"));
+                    return Result.Ok<EmailTypeDto>(result);
+                } 
+                return Result.Fail<EmailTypeDto>(Errors.Database.QueryError($"Email type not found: {emailType}"));
             }
             catch (Exception ex)
             {
-                return Result.Fail<string>(Errors.Database.GeneralError(ex.Message));
+                this.logger.LogCritical(ex, ex.Message);
+                return Result.Fail<EmailTypeDto>(Errors.Database.GeneralError(ex.Message));
             }
         }
 
@@ -69,6 +73,7 @@ namespace Median.Intranet.DAL.Repositories
             }
             catch (Exception ex)
             {
+                this.logger.LogCritical(ex, ex.Message);
                 return Result.Fail(Errors.Database.GeneralError(ex.Message));
             }
         }
@@ -88,7 +93,7 @@ namespace Median.Intranet.DAL.Repositories
             }
             catch (Exception ex)
             {
-                //log it
+                this.logger.LogCritical(ex, ex.Message);
             }
         }
     }

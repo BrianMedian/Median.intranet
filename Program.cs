@@ -14,6 +14,7 @@ using Npgsql;
 using Serilog;
 using System.ComponentModel.Design;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,8 @@ builder.Services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 builder.Services.AddScoped<IProfileDataRepository, ProfileDataRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEmailTypeRepository, EmailTypeRepository>();
+builder.Services.AddScoped<IEmailLogRepository, EmailLogRepository>();
+builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
 // -----------------------------------------------------------
 // UTILS
@@ -212,10 +215,20 @@ app.MapPost("/changepassword", [Authorize(Roles = "Admin")] async (IAuthFacade a
 })
 .RequireCors("Frontend");
 
-app.MapPost("/register", [Authorize(Roles = UserRoles.Admin)] async (IAuthFacade auth, RegisterRequest req) =>
+app.MapPost("/register", [Authorize] async (IAuthFacade auth, IProfileDataRepository profileDataRepository, RegisterRequest req) =>
 {
     var result = await auth.RegisterAsync(req.Email, req.Password);
-    return result ? Results.Unauthorized() : Results.Ok(result);
+    if (result != null && result.Success)
+    {
+        //create empty profile data        
+        await profileDataRepository.CreateAsync(new Median.Intranet.Models.ProfileData()
+        {
+            UserId = result.UserId,
+            Email = req.Email
+        });
+        return Results.Ok(result);
+    }
+    return Results.Unauthorized();
 })
 .RequireCors("Frontend");
 
