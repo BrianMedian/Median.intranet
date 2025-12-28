@@ -37,7 +37,7 @@ jobs:
     # 1) Restore entire solution
     # ------------------------------
     - name: Restore
-      run: dotnet restore Median.intranet.sln
+      run: dotnet restore Median.IntranetSolution.sln
 
     # ------------------------------
     # 2) Build entire solution
