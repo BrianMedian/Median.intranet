@@ -57,7 +57,7 @@ jobs:
       run: dotnet publish Median.Intranet.csproj -c Release -o publish
 
     - name: Move publish output into API folder
-      run: mv publish Median.Intranet/publish
+      run: mv publish publish
 
 
     # ------------------------------
