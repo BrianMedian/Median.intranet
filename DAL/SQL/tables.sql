@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS documents(
 	filepath TEXT NULL,
 	filename TEXT NULL,
 	filesize BIGINT NULL
-)
+);
 
 -- products table
 CREATE TABLE IF NOT EXISTS products(
@@ -19,8 +19,9 @@ CREATE TABLE IF NOT EXISTS products(
 	updated TIMESTAMP DEFAULT NOW(),
 	name TEXT NOT NULL,
 	description TEXT NULL,
-	price INTEGER NOT NULL DEFAULT 0
-)
+	price INTEGER NOT NULL DEFAULT 0,
+	tags TEXT NULL
+);
 
 -- emailtemplates table
 CREATE TABLE IF NOT EXISTS emailtemplates(
@@ -33,7 +34,7 @@ CREATE TABLE IF NOT EXISTS emailtemplates(
    version INTEGER NOT NULL DEFAULT 0,
    content TEXT NULL,
    key TEXT NOT NULL UNIQUE
-)
+);
 
 -- profiledata table
 CREATE TABLE IF NOT EXISTS profiledata(
@@ -47,14 +48,14 @@ CREATE TABLE IF NOT EXISTS profiledata(
 	email TEXT NULL,
 	onlinecardurl TEXT NULL,
 	profilepictureurl TEXT NULL
-)
+);
 
 -- emailsettings table
 CREATE TABLE IF NOT EXISTS emailsettings(
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	emailtype TEXT NOT NULL,
 	templateid UUID NULL
-)
+);
 
 -- emaillog table
 CREATE TABLE IF NOT EXISTS emaillog(
@@ -67,7 +68,19 @@ CREATE TABLE IF NOT EXISTS emaillog(
 	toemail TEXT NULL,
 	templateid UUID NULL,
 	status TEXT NULL
-)
+);
+
+-- wikientity
+CREATE TABLE IF NOT EXISTS wikis (
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	createdat TIMESTAMP DEFAULT NOW(),
+	updatedat TIMESTAMP DEFAULT NOW(),
+	title TEXT NOT NULL,
+	markdown TEXT NULL,
+	parentid UUID NULL,
+	sortorder INT NOT NULL DEFAULT 0,
+	isactive BOOLEAN NOT NULL DEFAULT TRUE
+);
 
 -- seed data
 INSERT INTO users(id, email, passwordhash, created, userrole, lastlogin) VALUES ('ddf89a16-f57d-4f02-b5bb-42232dff11b9', 'info@median.dk', 'DBT3trJHhTmyo1E+xar0qQ==.GRVh7wFtw9JrOoVodikt6PczWuM+ci+xNr9mdEaE+gs=', now(), 'Admin', now());

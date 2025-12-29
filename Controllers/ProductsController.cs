@@ -36,7 +36,8 @@ namespace Median.Intranet.Controllers
             {
                 Name = request.name,
                 Description = request.description,
-                Price = request.price
+                Price = request.price,
+                Tags = request.tags
             };
             var createResult = await productRepository.CreateAsync(productEntity);            
             return FromResult(createResult);
@@ -54,6 +55,7 @@ namespace Median.Intranet.Controllers
             existingProduct.Name = request.name;
             existingProduct.Description = request.description;
             existingProduct.Price = request.price;
+            existingProduct.Tags = request.tags;
             var updateResult = await productRepository.UpdateAsync(existingProduct);
             return FromResult(updateResult);
         }
@@ -66,6 +68,6 @@ namespace Median.Intranet.Controllers
         }
     }
 
-    public record CreateProductRequest(string name, string description, int price);
-    public record UpdateProductRequest(string name, string description, int price);
+    public record CreateProductRequest(string name, string description, int price, string tags);
+    public record UpdateProductRequest(string name, string description, int price, string tags);
 }
