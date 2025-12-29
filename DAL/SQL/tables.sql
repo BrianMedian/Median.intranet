@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS products(
 	updated TIMESTAMP DEFAULT NOW(),
 	name TEXT NOT NULL,
 	description TEXT NULL,
+	shortdescription TEXT NULL,
 	price INTEGER NOT NULL DEFAULT 0,
 	tags TEXT NULL
 );

@@ -18,7 +18,7 @@ namespace Median.Intranet.DAL.Repositories
         {
             try
             {
-                const string sql = "insert into products(name, description, price, tags) values (@name, @description, @price, @tags) RETURNING *";
+                const string sql = "insert into products(name, shortdescription, description, price, tags) values (@name, @shortdescription, @description, @price, @tags) RETURNING *";
                 using var conn = CreateConnection();
                 var newProduct = await conn.QuerySingleOrDefaultAsync<ProductEntity>(sql, product);
                 return Result<ProductEntity>.Ok(newProduct!);
@@ -78,9 +78,9 @@ namespace Median.Intranet.DAL.Repositories
         {
             try
             {
-                const string sql = "update products set name = @name, description = @description, price = @price, tags = @tags where id = @id";
+                const string sql = "update products set name = @name, shortdescription = @shortdescription, description = @description, price = @price, tags = @tags where id = @id";
                 using var conn = CreateConnection();
-                var newProduct = await conn.ExecuteAsync(sql, new {name = product.Name, description = product.Description, price = product.Price, tags = product.Tags,  @id = product.Id});
+                var newProduct = await conn.ExecuteAsync(sql, new {name = product.Name, shortdescription = product.ShortDescription, description = product.Description, price = product.Price, tags = product.Tags,  @id = product.Id});
                 return Result<ProductEntity>.Ok(newProduct!);
             }
             catch (Exception ex)

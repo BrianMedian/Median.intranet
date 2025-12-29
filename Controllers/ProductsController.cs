@@ -34,10 +34,10 @@ namespace Median.Intranet.Controllers
         {
             var productEntity = new Median.Intranet.Models.ProductEntity
             {
-                Name = request.name,
-                Description = request.description,
-                Price = request.price,
-                Tags = request.tags
+                Name = request.Name,
+                Description = request.Description,
+                Price = request.Price,
+                Tags = request.Tags
             };
             var createResult = await productRepository.CreateAsync(productEntity);            
             return FromResult(createResult);
@@ -52,10 +52,11 @@ namespace Median.Intranet.Controllers
                 return FromResult(existingProductResult);
             }
             var existingProduct = existingProductResult.Value;
-            existingProduct.Name = request.name;
-            existingProduct.Description = request.description;
-            existingProduct.Price = request.price;
-            existingProduct.Tags = request.tags;
+            existingProduct.Name = request.Name;
+            existingProduct.Description = request.Description;
+            existingProduct.Price = request.Price;
+            existingProduct.Tags = request.Tags;
+            existingProduct.ShortDescription = request.ShortDescription;
             var updateResult = await productRepository.UpdateAsync(existingProduct);
             return FromResult(updateResult);
         }
@@ -66,8 +67,21 @@ namespace Median.Intranet.Controllers
             var result = await this.productRepository.DeleteAsync(id);
             return FromResult(result);
         }
-    }
+    }    
 
-    public record CreateProductRequest(string name, string description, int price, string tags);
-    public record UpdateProductRequest(string name, string description, int price, string tags);
+    public class CreateProductRequest
+    {
+        public string Name { get; set; }
+        public string? Description { get; set; }
+        public int Price { get; set; }= 0;
+        public string? Tags { get; set; }
+    }
+    public class UpdateProductRequest
+    {        
+        public string Name { get; set; }
+        public string? ShortDescription { get; set; }
+        public string? Description { get; set; }
+        public int Price { get; set; } = 0;
+        public string? Tags { get; set; }
+    }
 }
